@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "jp-urban"
+  },
+  "targets": {
+    "jp-urban": {
+      "hosting": {
+        "jp-urban": [
+          "jp-urban"
+        ]
+      }
+    }
   }
 }
