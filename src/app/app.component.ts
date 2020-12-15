@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.showSignInButton = false;
     this.auth.user.subscribe(user => {
       this.showSignInButton = Boolean(!user);
