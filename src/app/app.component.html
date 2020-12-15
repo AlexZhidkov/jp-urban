@@ -5,6 +5,8 @@
     </button>
     JP Urban
     <span fxFlex></span>
+    <button mat-button *ngIf="showSignInButton" [routerLink]="['/login']"> Sign In </button>
+    <ngx-auth-firebaseui-avatar [links]="avatarLinks" (onSignOut)="onSignOut()"></ngx-auth-firebaseui-avatar>
   </mat-toolbar>
 
   <router-outlet></router-outlet>
