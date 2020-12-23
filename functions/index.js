@@ -48,7 +48,7 @@ function addEvent(event, auth) {
     });
 }
 
-exports.addEventToCalendar = functions.https.onRequest((request, response) => {
+exports.addEventToCalendar = functions.region('australia-southeast1').https.onRequest((request, response) => {
     const eventData = {
         eventName: request.body.eventName,
         description: request.body.description,
@@ -66,17 +66,17 @@ exports.addEventToCalendar = functions.https.onRequest((request, response) => {
     });
 
     addEvent(eventData, oAuth2Client).then(data => {
-        response.status(200).send(data);
+        response.set('Access-Control-Allow-Origin', '*').status(200).send(data);
         return;
     }).catch(err => {
         console.error('Error adding event: ' + err.message);
-        response.status(500).send(ERROR_RESPONSE);
+        response.set('Access-Control-Allow-Origin', '*').status(500).send(ERROR_RESPONSE);
         return;
     });
 });
 
 function getAvailableSlots(auth) {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         calendar.events.list({
             auth: auth,
             calendarId: 'primary',
@@ -93,7 +93,7 @@ function getAvailableSlots(auth) {
     });
 }
 
-exports.getListOfEvents = functions.https.onRequest((request, response) => {
+exports.getListOfEvents = functions.region('australia-southeast1').https.onCall((data, context) => {
     const oAuth2Client = new OAuth2(
         googleCredentials.web.client_id,
         googleCredentials.web.client_secret,
@@ -104,13 +104,11 @@ exports.getListOfEvents = functions.https.onRequest((request, response) => {
         refresh_token: googleCredentials.refresh_token
     });
 
-    getAvailableSlots(oAuth2Client).then(data => {
-        response.status(200).send(data);
-        return;
+    return getAvailableSlots(oAuth2Client).then(d => {
+        return d;
     }).catch(err => {
         console.error('Error retrieving list of events: ' + err.message);
-        response.status(500).send(ERROR_RESPONSE);
-        return;
+        return { error: err.message };
     });
 });
 
