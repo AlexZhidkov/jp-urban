@@ -19,6 +19,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.showSignInButton = false;
+    this.avatarLinks = [
+      { icon: 'event_note', text: 'Humanitix Events', callback: () => { this.router.navigate(['events']); } },
+    ];
     this.auth.user.subscribe(user => {
       this.showSignInButton = Boolean(!user);
     });

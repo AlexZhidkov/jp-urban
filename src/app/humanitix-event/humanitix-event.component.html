@@ -1,0 +1,25 @@
+<div *ngIf="event">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>{{event?.name}}</mat-card-title>
+            <mat-card-subtitle>{{event?.startDate}} - {{event?.endDate}}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image [src]="event?.bannerImage?.url">
+        <mat-card-content>
+            <div [innerHTML]="event?.description"></div>
+        </mat-card-content>
+        <mat-card-actions>
+            <a mat-button [href]="'https://events.humanitix.com/' + event?.slug">OPEN IN HUMANITIX</a>
+        </mat-card-actions>
+    </mat-card>
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Tickets</mat-card-title>
+        </mat-card-header>
+        <mat-nav-list>
+            <a mat-list-item *ngFor="let date of event.dates" [routerLink]="['/tickets/' + event._id + '/' + date._id]">
+                {{date.startDate}} - {{date.endDate}}
+            </a>
+        </mat-nav-list>
+    </mat-card>
+</div>

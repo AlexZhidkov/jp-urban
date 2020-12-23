@@ -1,0 +1,14 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Events from Humanitix</mat-card-title>
+        <mat-card-subtitle>Select one</mat-card-subtitle>
+    </mat-card-header>
+    <mat-nav-list>
+        <a mat-list-item *ngFor="let event of events" [routerLink]="['/event/' + event._id]">
+            <h3 matLine> {{event.name}} </h3>
+            <p matLine>
+                {{event.startDate}} - {{event.endDate}}
+            </p>
+        </a>
+    </mat-nav-list>
+</mat-card>
