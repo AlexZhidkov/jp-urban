@@ -1,1 +1,12 @@
-<pre>{{ data | async | json }}</pre>
+<mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Available times</mat-card-title>
+        <mat-card-subtitle>Select to open calendar</mat-card-subtitle>
+    </mat-card-header>
+    <mat-nav-list>
+        <a mat-list-item *ngFor="let event of calendarEvents" [href]="event.htmlLink">
+            {{event.startDate}} {{event.startTime}} to {{event.endDate}} {{event.endTime}}
+        </a>
+    </mat-nav-list>
+</mat-card>
