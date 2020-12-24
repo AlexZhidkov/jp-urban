@@ -1,18 +1,36 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireFunctions } from '@angular/fire/functions';
-import { Observable } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
+interface CalendarTime {
+  dateTime: string;
+}
+interface CalendarEvent {
+  id: string;
+  start: CalendarTime;
+  startDate: string;
+  startTime: string;
+  end: CalendarTime;
+  endDate: string;
+  endTime: string;
+
+}
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.css']
 })
 export class BookingComponent implements OnInit {
-  data: Observable<any>;
-  calendarEvents: any[];
+  calendarEvents: CalendarEvent[];
   isLoading: boolean;
 
-  constructor(private fns: AngularFireFunctions) { }
+  constructor(
+    private auth: AngularFireAuth,
+    private fns: AngularFireFunctions,
+    private router: Router,
+    private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.isLoading = true;
@@ -30,4 +48,39 @@ export class BookingComponent implements OnInit {
     });
   }
 
+  bookTime(event: CalendarEvent): void {
+    this.isLoading = true;
+    this.auth.user.subscribe(user => {
+      const bookEvent = this.fns.httpsCallable('bookEvent');
+      const eventUpdate = {
+        calendarId: 'primary',
+        eventId: event.id,
+        sendUpdates: 'all',
+        requestBody: {
+          source: {
+            title: 'JP Urban App',
+            url: 'https://jp-urban.web.app'
+          },
+          summary: user.displayName,
+          description: `Booked a lesson with ${user.displayName}`,
+          attendees: [
+            {
+              displayName: user.displayName,
+              email: user.email,
+            }
+          ],
+          end: event.end,
+          start: event.start
+        }
+      };
+      bookEvent(eventUpdate).subscribe(result => {
+        this.isLoading = false;
+        const message = (result.error) ? 'ERROR: ' + result.error : 'Booked successfully';
+        this.snackBar.open(message, null, {
+          duration: 3000
+        });
+        this.router.navigate(['/']);
+      });
+    });
+  }
 }

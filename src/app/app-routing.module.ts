@@ -10,7 +10,7 @@ import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'booking', component: BookingComponent },
+  { path: 'booking', component: BookingComponent, canActivate: [LoggedInGuard] },
   { path: 'events', component: HumanitixEventsComponent, canActivate: [LoggedInGuard] },
   { path: 'event/:id', component: HumanitixEventComponent, canActivate: [LoggedInGuard] },
   { path: 'tickets/:eventId/:dateId', component: HumanitixTicketsComponent, canActivate: [LoggedInGuard] },
