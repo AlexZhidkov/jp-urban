@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFireFunctions } from '@angular/fire/functions';
 import { Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
@@ -15,6 +16,7 @@ export class HumanitixService {
   constructor(
     private auth: AngularFireAuth,
     private afs: AngularFirestore,
+    private fns: AngularFireFunctions,
     private http: HttpClient
   ) { }
 
@@ -36,20 +38,26 @@ export class HumanitixService {
   }
 
   getEvents(): Observable<any> {
-    return this.getHttpOptions().pipe(
-      mergeMap(options => this.http.get(this.humanitixUrl + 'events', options))
-    );
+    const getEventsCallable = this.fns.httpsCallable('humanitixGetEvents');
+    return getEventsCallable({});
+    // return getEventsCallable.pipe(
+    //   mergeMap(options => this.http.get(this.humanitixUrl + 'events', options))
+    // );
   }
 
   getEvent(id: string): Observable<any> {
-    return this.getHttpOptions().pipe(
-      mergeMap(options => this.http.get(`${this.humanitixUrl}/event?eventId=${id}`, options))
-    );
+    const getEventCallable = this.fns.httpsCallable('humanitixGetEvent');
+    return getEventCallable({ id });
+    // return this.getHttpOptions().pipe(
+    //   mergeMap(options => this.http.get(`${this.humanitixUrl}/event?eventId=${id}`, options))
+    // );
   }
 
   getTickets(eventId: string, dateId: string): Observable<any> {
-    return this.getHttpOptions().pipe(
-      mergeMap(options => this.http.get(`${this.humanitixUrl}/tickets?eventDateId=${dateId}&eventId=${eventId}`, options))
-    );
+    const getTicketsCallable = this.fns.httpsCallable('humanitixGetTickets');
+    return getTicketsCallable({ eventId, dateId });
+    // return this.getHttpOptions().pipe(
+    //   mergeMap(options => this.http.get(`${this.humanitixUrl}/tickets?eventDateId=${dateId}&eventId=${eventId}`, options))
+    // );
   }
 }

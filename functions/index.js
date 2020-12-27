@@ -11,8 +11,18 @@ const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const calendar = google.calendar('v3');
 const functions = require('firebase-functions');
+const https = require('https');
 
 const googleCredentials = require('./credentials.json');
+const humanitixOptions = {
+    hostname: 'console.humanitix.net',
+    path: '/public/api/v1/',
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': googleCredentials.humanitixApiKey,
+    }
+}
 
 function getAvailableSlots(auth) {
     return new Promise((resolve, reject) => {
@@ -83,5 +93,38 @@ function bookEventInCalendar(data) {
                 console.log('Request successful');
                 resolve(res.data);
             });
+    });
+}
+
+exports.humanitixGetEvents = functions.region('australia-southeast1').https.onCall((data, context) => {
+    return _humanitixGetEvents().then(d => {
+        return d;
+    }).catch(err => {
+        console.error('Error retrieving events from Humanitix: ');
+        console.error(err);
+        return { error: err };
+    });
+});
+
+function _humanitixGetEvents() {
+    return new Promise((resolve, reject) => {
+        let options = humanitixOptions;
+        options.path += 'events';
+
+        const request = https.request(options, (res) => {
+            console.log('Humanitix response Status Code:', res.statusCode);
+            let data = '';
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            res.on('end', () => {
+                resolve(JSON.parse(data))
+            });
+        });
+        request.on('error', (err) => {
+            console.log("Error: ", err.message);
+            reject(new Error(err.message));
+        });
+        request.end();
     });
 }
