@@ -1,3 +1,4 @@
+<mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
 <mat-list>
     <mat-list-item *ngFor="let ticket of tickets">
         <h3 matLine> {{ticket.firstName}} {{ticket.lastName}} </h3>

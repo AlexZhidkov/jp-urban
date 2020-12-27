@@ -14,15 +14,6 @@ const functions = require('firebase-functions');
 const https = require('https');
 
 const googleCredentials = require('./credentials.json');
-const humanitixOptions = {
-    hostname: 'console.humanitix.net',
-    path: '/public/api/v1/',
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': googleCredentials.humanitixApiKey,
-    }
-}
 
 function getAvailableSlots(auth) {
     return new Promise((resolve, reject) => {
@@ -96,8 +87,8 @@ function bookEventInCalendar(data) {
     });
 }
 
-exports.humanitixGetEvents = functions.region('australia-southeast1').https.onCall((data, context) => {
-    return _humanitixGetEvents().then(d => {
+exports.getDataFromHumanitixApi = functions.region('australia-southeast1').https.onCall((data, context) => {
+    return humanitixGetData(data).then(d => {
         return d;
     }).catch(err => {
         console.error('Error retrieving events from Humanitix: ');
@@ -106,11 +97,17 @@ exports.humanitixGetEvents = functions.region('australia-southeast1').https.onCa
     });
 });
 
-function _humanitixGetEvents() {
+function humanitixGetData(requestPath) {
     return new Promise((resolve, reject) => {
-        let options = humanitixOptions;
-        options.path += 'events';
-
+        const options = {
+            hostname: 'console.humanitix.net',
+            path: '/public/api/v1/' + requestPath,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': googleCredentials.humanitixApiKey,
+            }
+        }
         const request = https.request(options, (res) => {
             console.log('Humanitix response Status Code:', res.statusCode);
             let data = '';

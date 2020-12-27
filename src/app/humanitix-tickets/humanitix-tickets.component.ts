@@ -9,6 +9,7 @@ import { HumanitixService } from '../humanitix.service';
 })
 export class HumanitixTicketsComponent implements OnInit {
   tickets: any;
+  isLoading: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -18,7 +19,11 @@ export class HumanitixTicketsComponent implements OnInit {
   ngOnInit(): void {
     const eventId = this.route.snapshot.paramMap.get('eventId');
     const dateId = this.route.snapshot.paramMap.get('dateId');
-    this.humanitixService.getTickets(eventId, dateId).subscribe(e => this.tickets = e.tickets);
+    this.isLoading = true;
+    this.humanitixService.getTickets(eventId, dateId).subscribe(e => {
+      this.tickets = e.tickets;
+      this.isLoading = false;
+    });
   }
 
 }
